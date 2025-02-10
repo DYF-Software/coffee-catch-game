@@ -24,17 +24,36 @@ let cup = {
 let drops = [];
 let score = 0; // Oyuncu puanı
 let gameRunning = true; // Oyun devam ediyor mu?
+let dragging = false; // Mobil için sürükleme kontrolü
 
 // Mouse hareketi için
 canvas.addEventListener("mousemove", (event) => {
     cup.x = event.clientX - cup.width / 2;
 });
 
-// Dokunmatik ekranlar için hareket desteği
-canvas.addEventListener("touchmove", (event) => {
-    event.preventDefault(); // Sayfanın kaymasını engelle
+// Dokunmatik ekranlar için sürükleme desteği
+canvas.addEventListener("touchstart", (event) => {
     let touch = event.touches[0]; // İlk dokunma noktası
-    cup.x = touch.clientX - cup.width / 2;
+    if (
+        touch.clientX >= cup.x &&
+        touch.clientX <= cup.x + cup.width &&
+        touch.clientY >= cup.y &&
+        touch.clientY <= cup.y + cup.height
+    ) {
+        dragging = true; // Eğer kupa dokunulduysa sürüklemeyi başlat
+    }
+});
+
+canvas.addEventListener("touchmove", (event) => {
+    if (dragging) {
+        event.preventDefault(); // Sayfanın kaymasını engelle
+        let touch = event.touches[0];
+        cup.x = touch.clientX - cup.width / 2;
+    }
+});
+
+canvas.addEventListener("touchend", () => {
+    dragging = false; // Parmağı kaldırınca sürükleme dursun
 });
 
 function spawnDrop() {
@@ -76,7 +95,7 @@ function update() {
     });
 
     // Puan aralıklarına göre kupa seviyesini ayarla
-     if (score >= 60) {
+ if (score >= 60) {
         cup.level = 3;
     } else if (score >= 40) {
         cup.level = 2;
@@ -87,8 +106,9 @@ function update() {
     }
 
     // Oyun bitirme kontrolü
-    if (score >= 100) {
+    if (score >= 100 && gameRunning) {
         gameRunning = false; // Oyunu durdur
+        showWinPopup(); // Kazanma popup'ını göster
     }
 }
 
@@ -105,13 +125,6 @@ function draw() {
     
     // Damlaları çiz
     drops.forEach(drop => ctx.drawImage(coffeeDrop, drop.x, drop.y, drop.width, drop.height));
-
-    // Oyun bittiğinde "You Win!" mesajı göster
-    if (!gameRunning) {
-        ctx.fillStyle = "#000";
-        ctx.font = "48px Arial";
-        ctx.fillText("YOU WIN!", canvas.width / 2 - 100, canvas.height / 2);
-    }
 }
 
 function gameLoop() {
@@ -123,3 +136,56 @@ function gameLoop() {
 }
 
 gameLoop();
+
+// KAZANMA POPUP'INI OLUŞTUR
+function showWinPopup() {
+    // Popup arka planı
+    let popup = document.createElement("div");
+    popup.id = "winPopup";
+    popup.style.position = "fixed";
+    popup.style.top = "50%";
+    popup.style.left = "50%";
+    popup.style.transform = "translate(-50%, -50%)";
+    popup.style.background = "white";
+    popup.style.padding = "20px";
+    popup.style.borderRadius = "10px";
+    popup.style.boxShadow = "0px 0px 10px rgba(0,0,0,0.2)";
+    popup.style.textAlign = "center";
+
+    // Başlık
+    let title = document.createElement("h2");
+    title.innerText = "🎉 Tebrikler! Kupon Kazandınız! 🎉";
+    popup.appendChild(title);
+
+    // Kupon kodu
+    let couponCode = document.createElement("p");
+    couponCode.id = "couponCode";
+    couponCode.innerText = "COFFEE2024";
+    couponCode.style.fontSize = "20px";
+    couponCode.style.fontWeight = "bold";
+    couponCode.style.background = "#eee";
+    couponCode.style.padding = "10px";
+    couponCode.style.borderRadius = "5px";
+    popup.appendChild(couponCode);
+
+    // Kopyala Butonu
+    let copyButton = document.createElement("button");
+    copyButton.innerText = "Kopyala";
+    copyButton.style.marginTop = "10px";
+    copyButton.style.padding = "10px";
+    copyButton.style.fontSize = "16px";
+    copyButton.style.border = "none";
+    copyButton.style.background = "#4CAF50";
+    copyButton.style.color = "white";
+    copyButton.style.borderRadius = "5px";
+    copyButton.style.cursor = "pointer";
+
+    copyButton.onclick = function () {
+        navigator.clipboard.writeText(couponCode.innerText);
+        alert("Kupon Kopyalandı!");
+    };
+
+    popup.appendChild(copyButton);
+
+    document.body.appendChild(popup);
+}
