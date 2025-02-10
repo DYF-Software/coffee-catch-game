@@ -24,9 +24,16 @@ let cup = {
 
 let drops = [];
 
-// Event listener to move cup with mouse
+// Mouse hareketi için
 canvas.addEventListener("mousemove", (event) => {
     cup.x = event.clientX - cup.width / 2;
+});
+
+// Dokunmatik ekranlar için hareket desteği
+canvas.addEventListener("touchmove", (event) => {
+    event.preventDefault(); // Sayfanın kaymasını engelle
+    let touch = event.touches[0]; // İlk dokunma noktası
+    cup.x = touch.clientX - cup.width / 2;
 });
 
 function spawnDrop() {
@@ -39,13 +46,13 @@ function spawnDrop() {
     });
 }
 
-setInterval(spawnDrop, 1000); // Spawn a drop every second
+setInterval(spawnDrop, 1000); // Her saniyede bir damla oluştur
 
 function update() {
-    // Move drops
+    // Damlaları hareket ettir
     drops.forEach(drop => drop.y += drop.speed);
     
-    // Check for collisions
+    // Çarpışmaları kontrol et
     drops = drops.filter(drop => {
         if (
             drop.y + drop.height >= cup.y &&
@@ -55,19 +62,19 @@ function update() {
             if (cup.level < cupLevels.length - 1) {
                 cup.level++;
             }
-            return false; // Remove drop after collision
+            return false; // Çarpışan damlayı kaldır
         }
-        return drop.y < canvas.height; // Remove if it falls out
+        return drop.y < canvas.height; // Ekranın dışına çıkan damlaları kaldır
     });
 }
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // Draw drops
+    // Damlayı çiz
     drops.forEach(drop => ctx.drawImage(coffeeDrop, drop.x, drop.y, drop.width, drop.height));
     
-    // Draw cup
+    // Kupayı çiz
     ctx.drawImage(cupLevels[cup.level], cup.x, cup.y, cup.width, cup.height);
 }
 
