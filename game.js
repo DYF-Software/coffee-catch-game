@@ -18,11 +18,12 @@ let cup = {
     x: canvas.width / 2 - 50,
     y: canvas.height - 150,
     width: 100,
-    height: 100,
-    level: 0 // Start with empty cup
+    height: 100
 };
 
 let drops = [];
+let score = 0; // Oyuncu puanı
+let gameRunning = true; // Oyun devam ediyor mu?
 
 // Mouse hareketi için
 canvas.addEventListener("mousemove", (event) => {
@@ -37,18 +38,22 @@ canvas.addEventListener("touchmove", (event) => {
 });
 
 function spawnDrop() {
-    drops.push({
-        x: Math.random() * (canvas.width - 30),
-        y: 0,
-        width: 30,
-        height: 30,
-        speed: 3
-    });
+    if (gameRunning) {
+        drops.push({
+            x: Math.random() * (canvas.width - 30),
+            y: 0,
+            width: 30,
+            height: 30,
+            speed: 3
+        });
+    }
 }
 
 setInterval(spawnDrop, 1000); // Her saniyede bir damla oluştur
 
 function update() {
+    if (!gameRunning) return; // Oyun bittiyse güncellemeyi durdur
+
     // Damlaları hareket ettir
     drops.forEach(drop => drop.y += drop.speed);
     
@@ -59,29 +64,62 @@ function update() {
             drop.x + drop.width >= cup.x &&
             drop.x <= cup.x + cup.width
         ) {
-            if (cup.level < cupLevels.length - 1) {
-                cup.level++;
-            }
+            score += 10; // Yakalanan her damla için +10 puan
             return false; // Çarpışan damlayı kaldır
         }
-        return drop.y < canvas.height; // Ekranın dışına çıkan damlaları kaldır
+        if (drop.y >= canvas.height) {
+            score -= 5; // Kaçan her damla için -5 puan
+            if (score < 0) score = 0; // Puan negatif olamaz
+            return false; // Ekranın dışına çıkan damlayı kaldır
+        }
+        return true;
     });
+
+    // Puan aralıklarına göre kupa seviyesini ayarla
+     if (score >= 60) {
+        cup.level = 3;
+    } else if (score >= 40) {
+        cup.level = 2;
+    } else if (score >= 20) {
+        cup.level = 1;
+    } else {
+        cup.level = 0;
+    }
+
+    // Oyun bitirme kontrolü
+    if (score >= 100) {
+        gameRunning = false; // Oyunu durdur
+    }
 }
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // Damlayı çiz
-    drops.forEach(drop => ctx.drawImage(coffeeDrop, drop.x, drop.y, drop.width, drop.height));
+    // Puanı çiz
+    ctx.fillStyle = "#000";
+    ctx.font = "24px Arial";
+    ctx.fillText("Score: " + score, 20, 40); // Sol üst köşe
     
     // Kupayı çiz
     ctx.drawImage(cupLevels[cup.level], cup.x, cup.y, cup.width, cup.height);
+    
+    // Damlaları çiz
+    drops.forEach(drop => ctx.drawImage(coffeeDrop, drop.x, drop.y, drop.width, drop.height));
+
+    // Oyun bittiğinde "You Win!" mesajı göster
+    if (!gameRunning) {
+        ctx.fillStyle = "#000";
+        ctx.font = "48px Arial";
+        ctx.fillText("YOU WIN!", canvas.width / 2 - 100, canvas.height / 2);
+    }
 }
 
 function gameLoop() {
     update();
     draw();
-    requestAnimationFrame(gameLoop);
+    if (gameRunning) {
+        requestAnimationFrame(gameLoop);
+    }
 }
 
 gameLoop();
