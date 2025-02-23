@@ -95,11 +95,11 @@ function update() {
     });
 
     // Puan aralıklarına göre kupa seviyesini ayarla
- if (score >= 60) {
+ if (score >= 80) {
         cup.level = 3;
-    } else if (score >= 40) {
+    } else if (score >= 60) {
         cup.level = 2;
-    } else if (score >= 20) {
+    } else if (score >= 30) {
         cup.level = 1;
     } else {
         cup.level = 0;
