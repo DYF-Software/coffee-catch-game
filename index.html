@@ -4,22 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coffee Catch Game</title>
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            background-color: #f4e1c1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        canvas {
-            background-color: rgba(255, 255, 255, 0.5);
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
+
+    
 </head>
 <body>
-    <script src="game.js"></script>
+
+    <!-- Başlangıç Ekranı -->
+    <div id="start-screen" class="overlay">
+        <div class="start-container">
+            <h1>COFFEE CATCH GAME</h1>
+            <p>Reklamımızı oynayın ve ödüller kazanın!</p>
+            <button id="start-btn">Oyuna Başla</button>
+        </div>
+    </div>
+
+    <!-- Oyun Alanı -->
+    <div class="game-main">
+        <canvas id="gameCanvas"></canvas>
+    </div>
+
+    <script>
+        document.getElementById("start-btn").addEventListener("click", function () {
+            document.getElementById("start-screen").style.display = "none"; // Başlangıç ekranını gizle
+
+            // Dinamik olarak game.js dosyasını yükle
+            let script = document.createElement("script");
+            script.src = "game.js";
+            script.defer = true;
+            document.body.appendChild(script);
+        });
+    </script>
+
 </body>
 </html>

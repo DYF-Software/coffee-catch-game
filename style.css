@@ -1,0 +1,93 @@
+/* Sayfa Genel Ayarları */
+body, html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Canvas Ayarları */
+canvas {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* Başlangıç Ekranı */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+/* Başlangıç Kutusu */
+.start-container {
+    background: #fff;
+    padding: 40px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 400px;
+}
+
+/* Başlama Butonu */
+#start-btn {
+    margin-top: 20px;
+    padding: 12px 24px;
+    font-size: 18px;
+    border: none;
+    background: #5563DE;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    width: 100%;
+}
+
+#start-btn:hover {
+    background: #3a49b8;
+}
+
+/* Skor Yazısı */
+.score-text {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 24px;
+    font-family: Arial, sans-serif;
+    color: black;
+}
+
+/* MOBİL UYUMLULUK */
+@media (max-width: 600px) {
+    .start-container {
+        width: 90%;
+        max-width: 300px;
+        padding: 20px;
+    }
+
+    .start-container h1 {
+        font-size: 20px;
+    }
+
+    .start-container p {
+        font-size: 14px;
+    }
+
+    #start-btn {
+        font-size: 16px;
+        padding: 10px 20px;
+    }
+}
